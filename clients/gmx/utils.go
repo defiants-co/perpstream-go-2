@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/defiants-co/perpstream-go-2/clients/common/models"
+	"github.com/defiants-co/perpstream-go-2/clients/common/utils"
 	abis "github.com/defiants-co/perpstream-go-2/clients/gmx/abi"
 	"github.com/hasura/go-graphql-client"
 )
@@ -25,7 +26,7 @@ func gmxToFuturesPosition(position abis.PositionProps, priceCache *priceCache) *
 	collateralUsd := getCollateralUsd(collateralToken, collateralTokenAmount, priceCache)
 	tokenPrice := priceCache.GetPrice(token)
 	leverage := getLeverage(tokenPrice, sizeInTokens, collateralToken, collateralTokenAmount, priceCache)
-	currentSizeInUsd := tokenPrice * sizeInTokens
+	currentSizeInUsd := utils.RoundTo2Decimals(tokenPrice * sizeInTokens)
 	pnl := getPnl(position.Flags.IsLong, tokenPrice, entryPrice, sizeInTokens)
 
 	val := models.NewFuture(
@@ -70,11 +71,11 @@ func getOldSizeInUsd(sizeInUsd *big.Int) float64 {
 
 func getSizeInTokens(sizeInTokens *big.Int, token string) float64 {
 	sizeInTokensFl, _ := sizeInTokens.Float64()
-	return math.Round(10000*sizeInTokensFl/math.Pow(10, float64(gmxMarketToDecimals[token]))) / 10000
+	return utils.RoundToNDecimals(sizeInTokensFl/math.Pow(10, float64(gmxMarketToDecimals[token])), 6)
 }
 
 func getEntryPrice(oldSizeInUsd, sizeInTokens float64) float64 {
-	return math.Round((oldSizeInUsd/sizeInTokens)*10000) / 10000
+	return utils.RoundToNDecimals(oldSizeInUsd/sizeInTokens, 4)
 }
 
 func getCollateralTokenAmount(collateralAmount *big.Int, collateralToken string) float64 {
@@ -84,19 +85,19 @@ func getCollateralTokenAmount(collateralAmount *big.Int, collateralToken string)
 
 func getCollateralUsd(collateralToken string, collateralTokenAmount float64, priceCache *priceCache) float64 {
 	collateralPrice := priceCache.GetPrice(collateralToken)
-	return math.Round(collateralPrice*collateralTokenAmount*10000) / 10000
+	return utils.RoundTo2Decimals(collateralPrice * collateralTokenAmount)
 }
 
 func getLeverage(tokenPrice, sizeInTokens float64, collateralToken string, collateralTokenAmount float64, priceCache *priceCache) float64 {
 	collateralPrice := priceCache.GetPrice(collateralToken)
-	return math.Round(1000*(tokenPrice*sizeInTokens)/(collateralPrice*collateralTokenAmount)) / 1000
+	return utils.RoundToNDecimals((tokenPrice*sizeInTokens)/(collateralPrice*collateralTokenAmount), 4)
 }
 
 func getPnl(isLong bool, tokenPrice, entryPrice, sizeInTokens float64) float64 {
 	if isLong {
-		return math.Round((tokenPrice-entryPrice)*sizeInTokens*100) / 100
+		return utils.RoundTo2Decimals((tokenPrice - entryPrice) * sizeInTokens)
 	}
-	return math.Round((entryPrice-tokenPrice)*sizeInTokens*100) / 100
+	return utils.RoundTo2Decimals((entryPrice - tokenPrice) * sizeInTokens)
 }
 
 type periodAccountStatObject struct {
