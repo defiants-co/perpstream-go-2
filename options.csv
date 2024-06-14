@@ -1,8 +1,0 @@
-Strategy,Asset,IsInversed,Amount,AmountUsd,PremiumPaid,PnlUsd,PnlPercent,PurchaseDate,ExpirationDate,DurationDays,Strikes
-bear call spread,BTC,true,0.554,82753.56,1970.32,796.9,0.4045,2024-06-06 02:04:31 +0000 UTC,2024-06-20 02:04:31 +0000 UTC,14,[{call true 79682.32} {call false 74687.33}]
-bear call spread,BTC,true,0.07,10287.91,244.95,79.92,0.3263,2024-06-04 15:29:30 +0000 UTC,2024-06-18 15:29:30 +0000 UTC,14,[{call true 78126.12} {call false 73485.06}]
-bear call spread,ETH,true,0.806,6085.88,60.86,91.02,1.4955,2024-06-04 04:14:44 +0000 UTC,2024-06-11 04:14:44 +0000 UTC,7,[{call true 3963.79} {call false 3775.36}]
-bear call spread,BTC,true,0.152,22032.03,524.57,159.99,0.305,2024-06-04 01:22:24 +0000 UTC,2024-06-18 01:22:24 +0000 UTC,14,[{call true 76977.5} {call false 72473.79}]
-long condor,ETH,true,2,23052.33,768.39,384,0.4998,2024-05-31 12:39:03 +0000 UTC,2024-06-24 12:39:03 +0000 UTC,24,[{call true 4802.32} {put true 2881.54} {call false 4226.12} {put false 3457.74}]
-long condor,ETH,true,0.83,9559.74,309.66,87.37,0.2821,2024-05-25 02:14:49 +0000 UTC,2024-06-08 02:14:49 +0000 UTC,14,[{call true 4582.32} {put true 2879.44} {call false 4103.97} {put false 3357.79}]
-bear call spread,BTC,true,0.2,28924.99,688.69,530.82,0.7708,2024-05-24 22:03:03 +0000 UTC,2024-06-22 22:03:03 +0000 UTC,29,[{call true 78410.04} {call false 72312.47}]
