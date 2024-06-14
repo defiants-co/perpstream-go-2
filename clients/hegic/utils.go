@@ -109,10 +109,10 @@ func resolveUser(userStats hegicUserStats, inactiveOptionsMap *utils.ConcurrentM
 
 	return models.NewUser(
 		userStats.User,
-		userStats.Overall.PnlUsd,
-		userStats.Overall.PnlPercent,
+		utils.RoundTo2Decimals(userStats.Overall.PnlUsd),
+		utils.RoundToNDecimals(userStats.Overall.PnlPercent, 5),
 		winRate,
-		userStats.Overall.TradingVolume,
+		utils.RoundTo2Decimals(userStats.Overall.TradingVolume),
 	)
 }
 
