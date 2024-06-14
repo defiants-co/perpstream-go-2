@@ -88,7 +88,7 @@ func resolveOption(hegicOption hegicPosition) models.Option {
 	)
 }
 
-func resolveUser(userStats hegicUserStats, inactiveOptionsMap *utils.ConcurrentMap[[]models.Option], activePositionsMap *utils.ConcurrentMap[[]models.Option]) models.User {
+func resolveUser(userStats hegicUserStats, inactiveOptionsMap *utils.ConcurrentMap[[]models.Option]) models.User {
 	total := 0
 	wins := 0
 
@@ -107,29 +107,12 @@ func resolveUser(userStats hegicUserStats, inactiveOptionsMap *utils.ConcurrentM
 		winRate = float64(wins) / float64(total)
 	}
 
-	activeOptions, exists := activePositionsMap.Get(userStats.User)
-	latestDate := time.Time{}
-	if !exists || len(activeOptions) == 0 {
-		for _, option := range usersOptions {
-			if option.PurchaseDate.After(latestDate) {
-				latestDate = option.PurchaseDate
-			}
-		}
-	} else {
-		for _, option := range activeOptions {
-			if option.PurchaseDate.After(latestDate) {
-				latestDate = option.PurchaseDate
-			}
-		}
-	}
-
 	return models.NewUser(
 		userStats.User,
 		userStats.Overall.PnlUsd,
 		userStats.Overall.PnlPercent,
 		winRate,
 		userStats.Overall.TradingVolume,
-		latestDate,
 	)
 }
 

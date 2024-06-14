@@ -77,7 +77,7 @@ func (hc *HegicClient) GetLeaderboard(limit int) ([]models.User, error) {
 	var users []models.User
 
 	for _, stat := range leaderboard {
-		users = append(users, resolveUser(stat, hc.inactiveOptions, hc.activeOptions))
+		users = append(users, resolveUser(stat, hc.inactiveOptions))
 	}
 	sort.Slice(users, func(i, j int) bool {
 		return users[i].PnlUsd > users[j].PnlUsd
