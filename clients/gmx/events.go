@@ -6,7 +6,6 @@ import (
 
 	"github.com/defiants-co/perpstream-go-2/clients/common/utils"
 	abis "github.com/defiants-co/perpstream-go-2/clients/gmx/abi"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethCommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
@@ -40,7 +39,7 @@ func NewGmxEventClient(rpcWebsocketUrl string) (*GmxEventClient, error) {
 func (c *GmxEventClient) StartStreaming() error {
 	logs := make(chan *abis.AbisEventLog)
 	fmt.Println("starting")
-	sub, err := c.eventCaller.WatchEventLog(&bind.WatchOpts{}, logs, hashedTopics)
+	sub, err := c.eventCaller.WatchEventLog(nil, logs, nil)
 	if err != nil {
 		return err
 	}

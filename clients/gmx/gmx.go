@@ -15,25 +15,22 @@ import (
 
 type GmxClient struct {
 	common.FuturesClient
-	cache          *utils.ConcurrentMap[[]models.Future]
 	prices         *priceCache
 	pool           *gmxConnectionPool
 	subgraphClient *graphql.Client
 	activeStreams  utils.ConcurrentMap[chan int]
 }
 
-func NewGmxClient(rpcs []string) (*GmxClient, error) {
+func NewGmxClient(rpcs []string, priceCacheWait float64) (*GmxClient, error) {
 	cp, err := newGmxConnectionPool(rpcs)
 	if err != nil {
 		return nil, err
 	}
-	cache := utils.NewConcurrentMap[[]models.Future]()
 	pc := newPriceCache()
-
+	pc.streamPrices(priceCacheWait)
 	client := graphql.NewClient(subgraphUrl, &http.Client{})
 
 	return &GmxClient{
-		cache:          cache,
 		prices:         pc,
 		pool:           cp,
 		subgraphClient: client,
@@ -67,7 +64,7 @@ func (c *GmxClient) FetchPositions(userId string) ([]models.Future, error) {
 	}
 	address := ethCommon.HexToAddress(userId)
 
-	abiPositions := c.pool.getPositions(address, 1)
+	abiPositions := c.pool.getPositions(address, 0)
 
 	positions := make([]models.Future, len(abiPositions))
 

@@ -1,36 +1,15 @@
 package main
 
 import (
-	"encoding/json"
+	"encoding/csv"
 	"fmt"
 	"os"
+	"reflect"
 
-	"github.com/defiants-co/perpstream-go-2/clients/common"
-	"github.com/defiants-co/perpstream-go-2/clients/common/models"
 	"github.com/defiants-co/perpstream-go-2/clients/hegic"
 )
 
 func main() {
-	hc, err := hegic.NewHegicClient()
-	if err != nil {
-		panic(err)
-	}
-
-	hc.StreamUpdates(10)
-	hc.StartOrderFlowStream(Callback2)
-
-	select {}
-
-	// var options []models.Option
-
-	// leader, _ := hc.GetLeaderboard(10000)
-	// for _, x := range leader {
-	// 	p, _ := hc.FetchPositions(x.Id)
-	// 	options = append(options, p...)
-	// }
-
-	// writeToFile[models.Option](options, "options.json")
-
 	// var Rpcs []string = []string{
 	// 	"https://arbitrum.llamarpc.com",
 	// 	"https://rpc.ankr.com/arbitrum",
@@ -43,69 +22,90 @@ func main() {
 	// 	"https://1rpc.io/arb",
 	// }
 
-	// gc, _ := gmx.NewGmxClient(Rpcs)
+	// var p []models.Future
+	// gc, _ := gmx.NewGmxClient(Rpcs, 10)
 
+	// l, _ := gc.GetLeaderboard(100000)
+
+	// var mu sync.Mutex
 	// var wg sync.WaitGroup
 
-	// leaderBoard, _ := gc.GetLeaderboard(10000)
-	// var filteredLeaderBoard []models.User
-	// for _, l := range leaderBoard {
-	// 	if l.PnlUsd > 10_000 && l.PnlPercent > 100 {
-	// 		filteredLeaderBoard = append(filteredLeaderBoard, l)
+	// for _, s := range l {
+	// 	if s.PnlUsd > 15000 {
+	// 		wg.Add(1)
+	// 		go func(id string) {
+	// 			defer wg.Done()
+	// 			fmt.Println("getting " + id)
+	// 			a, _ := gc.FetchPositions(id)
+	// 			mu.Lock()
+	// 			p = append(p, a...)
+	// 			mu.Unlock()
+	// 		}(s.Id)
 	// 	}
 	// }
-	// var userCount int = len(filteredLeaderBoard)
-	// positionList := utils.NewConcurrentList[models.Future]()
-	// for _, l := range filteredLeaderBoard {
-	// 	wg.Add(1)
-	// 	go func(l models.User) {
-	// 		defer wg.Done()
-	// 		defer func() {
-	// 			userCount--
-	// 			fmt.Printf("Users left: %d\n", userCount)
-	// 		}()
-	// 		positions, err := gc.FetchPositions(l.Id)
-	// 		if err == nil {
-	// 			positionList.Append(positions...)
-	// 		}
-	// 	}(l)
-	// }
+
 	// wg.Wait()
-	// writeToFile[models.Future](positionList.GetCopy(), "futures.json")
+
+	h, _ := hegic.NewHegicClient()
+
+	p, _ := h.FetchPositions("0xFDE316cc38F7b9F0711EcD4E9797AACdE4FaB7d0")
+	WriteStructToFile("options.csv", p)
 }
 
-var Callback common.FuturesPositionCallback = func(oldPositions []models.Future, newPositions []models.Future, isInitCallback bool, dataSource string, userId string) {
-	fmt.Println("started stream " + userId)
-}
-
-var Callback2 common.OptionsOrderCallback = func(order models.Option, dataSource string, userId string) {
-	fmt.Println(userId, order.Asset)
-}
-
-var Callback3 common.OptionsPositionCallback = func(old []models.Option, new []models.Option, init bool, data string, user string) {
-	fmt.Println("started stream " + user)
-}
-
-func writeToFile[T any](data []T, filename string) error {
+func WriteStructToFile[T any](filename string, data []T) error {
 	file, err := os.Create(filename)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
-	encoder := json.NewEncoder(file)
-	errCh := make(chan error, 1)
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
 
-	go func() {
-		errCh <- encoder.Encode(data)
-	}()
+	val := reflect.ValueOf(data)
+	if val.Kind() != reflect.Slice {
+		return fmt.Errorf("data is not a slice")
+	}
 
-	select {
-	case err = <-errCh:
-		if err != nil {
+	if val.Len() == 0 {
+		return nil
+	}
+
+	firstElem := val.Index(0).Interface()
+	headers := getStructFields(firstElem)
+	if err := writer.Write(headers); err != nil {
+		return err
+	}
+
+	for i := 0; i < val.Len(); i++ {
+		row := getStructValues(val.Index(i).Interface())
+		if err := writer.Write(row); err != nil {
 			return err
 		}
 	}
 
 	return nil
+}
+
+func getStructFields(data interface{}) []string {
+	val := reflect.ValueOf(data)
+	t := val.Type()
+	fields := make([]string, t.NumField())
+
+	for i := 0; i < t.NumField(); i++ {
+		fields[i] = t.Field(i).Name
+	}
+
+	return fields
+}
+
+func getStructValues(data interface{}) []string {
+	val := reflect.ValueOf(data)
+	values := make([]string, val.NumField())
+
+	for i := 0; i < val.NumField(); i++ {
+		values[i] = fmt.Sprintf("%v", val.Field(i).Interface())
+	}
+
+	return values
 }

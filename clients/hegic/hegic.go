@@ -93,9 +93,7 @@ func (hc *HegicClient) FetchPositions(userId string) ([]models.Option, error) {
 
 	positions, exists := hc.activeOptions.Get(userId)
 	if !exists {
-		time.Sleep(1 * time.Second)
-		fmt.Println("hello " + userId)
-		return hc.FetchPositions(userId)
+		return make([]models.Option, 0), nil
 	}
 
 	return positions, nil

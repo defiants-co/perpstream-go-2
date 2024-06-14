@@ -6,6 +6,7 @@ import (
 	"math"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/defiants-co/perpstream-go-2/clients/common/utils"
 )
@@ -13,6 +14,15 @@ import (
 // priceCache holds a concurrent map to store prices.
 type priceCache struct {
 	internalMap utils.ConcurrentMap[float64]
+}
+
+func (p *priceCache) streamPrices(waitSeconds float64) {
+	go func() {
+		for {
+			p.UpdatePrices()
+			time.Sleep(time.Duration(waitSeconds) * time.Second)
+		}
+	}()
 }
 
 // NewPriceCache initializes a new PriceCache and updates prices.

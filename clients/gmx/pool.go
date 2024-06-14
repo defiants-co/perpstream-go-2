@@ -68,7 +68,7 @@ func (p *gmxConnectionPool) nextCaller() *abis.MainCaller {
 	return caller
 }
 
-func (p *gmxConnectionPool) getPositions(userAddress common.Address, waitSeconds int) []abis.PositionProps {
+func (p *gmxConnectionPool) getPositions(userAddress common.Address, waitSeconds float64) []abis.PositionProps {
 	dataStoreAddress := common.HexToAddress(gmxDataStoreContractAddress)
 
 	for {

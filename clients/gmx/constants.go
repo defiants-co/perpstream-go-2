@@ -27,6 +27,7 @@ var gmxAddressToCollateralToken = map[string]string{
 	"0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9": "USDT",
 	"0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1": "DAI",
 	"0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8": "USDC.e",
+	"0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a": "GMX",
 	// Synthetics backed by WETH
 	// "": "DOGE",
 	// "": "XRP",
@@ -37,6 +38,7 @@ var gmxAddressToCollateralToken = map[string]string{
 var collateralTokenToGmxAddress = utils.ReverseMap(gmxAddressToCollateralToken)
 
 var gmxAddressToMarket = map[string]string{
+	"0x55391D178Ce46e7AC8eaAEa50A72D1A5a8A622Da": "GMX-USD",
 	"0x7C11F78Ce78768518D743E81Fdfa2F860C6b9A77": "BTC-USD",
 	"0x47c031236e19d024b42f8AE6780E44A573170703": "BTC-USD",
 	"0x450bb6774Dd8a756274E0ab4107953259d2ac541": "ETH-USD",
@@ -74,6 +76,7 @@ var gmxCollateralTokenDecimals = map[string]int{
 	"USDC.e": 6,
 	"USDT":   6,
 	"AAVE":   18,
+	"GMX":    18,
 }
 var gmxSyntheticsTokenDecimals = map[string]int{
 	"DOGE": 8,
@@ -85,7 +88,5 @@ var gmxSyntheticsTokenDecimals = map[string]int{
 var gmxMarketToDecimals = utils.AppendMaps(gmxCollateralTokenDecimals, gmxSyntheticsTokenDecimals)
 
 var hashedTopics []string = []string{
-	"8158c92a86fba3ad4328e3070acf14eeaa25ce908f0a1d8a42ffae2632d71061",
-	"77ee6d2f369ac59abdc613f8350d04ce0e65936aed7863f016580710fdbcc48e",
-	"6fdf1da0d9d4b65687f556d68595907183f49073ef5953c97575b3f534870942",
+	"0x58c2db7df4c74264668626709c956733e00d1392e3ca4b3e8edcd4ecbb5f9494",
 }
