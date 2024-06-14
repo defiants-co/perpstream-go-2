@@ -40,7 +40,7 @@ func gmxToFuturesPosition(position abis.PositionProps, priceCache *priceCache) *
 		entryPrice,
 		tokenPrice,
 		pnl,
-		math.Round((pnl/collateralUsd)*100*100)/100,
+		math.Round(1000*(pnl/collateralUsd))/1000,
 		time.Now(),
 	)
 
