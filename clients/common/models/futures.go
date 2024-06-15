@@ -8,6 +8,7 @@ import (
 )
 
 type Future struct {
+	Position
 	// Comparable Information
 	Market          string `json:"market"`
 	CollateralToken string `json:"collateral_token"`

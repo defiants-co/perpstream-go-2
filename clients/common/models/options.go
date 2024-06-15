@@ -5,6 +5,7 @@ import (
 )
 
 type Option struct {
+	Position
 	// Comparable Information
 	Strategy   string `json:"strategy"`
 	Asset      string `json:"asset"`
