@@ -19,7 +19,7 @@ type HegicClient struct {
 	orderFlowChan   chan []callbackPayload
 }
 
-func NewHegicClient(fetchOnInit bool) (*HegicClient, error) {
+func NewHegicClient(fetchOnInit bool, waitSeconds float64) (*HegicClient, error) {
 	client := &HegicClient{
 		activeOptions:   utils.NewConcurrentMap[[]models.Option](),
 		inactiveOptions: utils.NewConcurrentMap[[]models.Option](),
@@ -35,6 +35,7 @@ func NewHegicClient(fetchOnInit bool) (*HegicClient, error) {
 		go client.updateCache()
 	}
 
+	client.StreamUpdates(waitSeconds)
 	return client, nil
 }
 
