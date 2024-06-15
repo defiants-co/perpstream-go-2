@@ -101,21 +101,23 @@ func (c *GmxClient) StartPositionStream(userId string, callback common.FuturesPo
 
 	go callback(lastPositions, lastPositions, true, dataSourceName, userId)
 
-	for {
-		select {
-		case <-cancelChan:
-			c.activeStreams.Delete(userId)
-			return nil
+	go func() {
+		for {
+			select {
+			case <-cancelChan:
+				c.activeStreams.Delete(userId)
+				return
 
-		case <-time.After(time.Duration(waitSeconds) * time.Second):
-			newPositions := c.fetchRetry(userId)
-			if !utils.FuturePositionSetsAreEqual(lastPositions, newPositions) {
-				go callback(lastPositions, newPositions, false, dataSourceName, userId)
-				lastPositions = newPositions
+			case <-time.After(time.Duration(waitSeconds) * time.Second):
+				newPositions := c.fetchRetry(userId)
+				if !utils.FuturePositionSetsAreEqual(lastPositions, newPositions) {
+					go callback(lastPositions, newPositions, false, dataSourceName, userId)
+					lastPositions = newPositions
+				}
 			}
 		}
-	}
-
+	}()
+	return nil
 }
 
 func (c *GmxClient) CancelPositionStream(userId string) error {
