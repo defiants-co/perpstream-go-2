@@ -3,7 +3,7 @@ package common
 import "github.com/defiants-co/perpstream-go-2/clients/common/models"
 
 // Client is a generic interface for different types of trading clients.
-type Client[T models.Position] interface {
+type Client[T any] interface {
 	GetLeaderboard(limit int) ([]models.User, error)
 	FetchPositions(userId string) ([]T, error)
 	StartPositionStream(userId string, callback StreamPositionsCallback[T], waitSeconds float64) error
@@ -13,7 +13,7 @@ type Client[T models.Position] interface {
 }
 
 // StreamCallback defines the callback function for position streams.
-type StreamPositionsCallback[T models.Position] func(
+type StreamPositionsCallback[T any] func(
 	oldPositions []T,
 	newPositions []T,
 	isInitCallback bool,
@@ -22,7 +22,7 @@ type StreamPositionsCallback[T models.Position] func(
 )
 
 // StreamOrdersCallback defines the callback function for order flow streams.
-type StreamOrdersCallback[T models.Position] func(
+type StreamOrdersCallback[T any] func(
 	position T,
 	dataSource string,
 	userId string,

@@ -8,7 +8,6 @@ import (
 )
 
 type Future struct {
-	Position
 	// Comparable Information
 	Market          string `json:"market"`
 	CollateralToken string `json:"collateral_token"`
@@ -37,8 +36,7 @@ func (f Future) MarshalJSON() ([]byte, error) {
 	type Alias Future
 	return json.Marshal(&struct {
 		*Alias
-		Position Position `json:"-"`
-		UserId   string   `json:"-"`
+		UserId string `json:"-"`
 	}{
 		Alias: (*Alias)(&f),
 	})

@@ -1,12 +1,10 @@
 package models
 
 import (
-	"encoding/json"
 	"time"
 )
 
 type Option struct {
-	Position
 	// Comparable Information
 	Strategy   string `json:"strategy"`
 	Asset      string `json:"asset"`
@@ -36,16 +34,6 @@ type Strike struct {
 	Type        string  `json:"type"`
 	IsBought    bool    `json:"is_bought"`
 	StrikePrice float64 `json:"strike_price"`
-}
-
-func (f Option) MarshalJSON() ([]byte, error) {
-	type Alias Option
-	return json.Marshal(&struct {
-		*Alias
-		Position Position `json:"-"`
-	}{
-		Alias: (*Alias)(&f),
-	})
 }
 
 func (o *Option) Equal(other *Option) bool {
