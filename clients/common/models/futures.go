@@ -37,7 +37,8 @@ func (f Future) MarshalJSON() ([]byte, error) {
 	type Alias Future
 	return json.Marshal(&struct {
 		*Alias
-		UserId string `json:"-"`
+		Position Position `json:"-"`
+		UserId   string   `json:"-"`
 	}{
 		Alias: (*Alias)(&f),
 	})
